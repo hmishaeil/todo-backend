@@ -1,10 +1,12 @@
 package com.example.todo.services;
 
-import com.example.todo.entities.UserEntity;
+import com.example.todo.entities.User;
 
 import java.util.List;
 
 public interface UserService {
-    public UserEntity save(UserEntity user);
-    public List<UserEntity> getList();
+    public User create(User user);
+    public User update(User user);
+    public List<User> getList();
+    public User joinUsersByConfirmationTokens(String token);
 }

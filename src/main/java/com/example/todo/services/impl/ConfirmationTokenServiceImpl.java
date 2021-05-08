@@ -1,6 +1,7 @@
 package com.example.todo.services.impl;
 
-import com.example.todo.entities.ConfirmationTokenEntity;
+import com.example.todo.entities.ConfirmationToken;
+import com.example.todo.exceptions.ResourceNotFoundException;
 import com.example.todo.repositories.ConfirmationTokenRepository;
 import com.example.todo.services.ConfirmationTokenService;
 import org.slf4j.Logger;
@@ -17,10 +18,20 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
     ConfirmationTokenRepository confirmationTokenRepository;
 
     @Override
-    public ConfirmationTokenEntity save(ConfirmationTokenEntity ct) {
+    public ConfirmationToken save(ConfirmationToken ct) {
 
         LOGGER.debug(String.format("Creating ct {}", ct));
         return confirmationTokenRepository.save(ct);
+    }
+
+    @Override
+    public ConfirmationToken findByConfirmationToken(String ct) {
+        ConfirmationToken entity = confirmationTokenRepository.findByConfirmationToken(ct);
+        if (entity == null) {
+            throw new ResourceNotFoundException(String.format("%s", "Token not found."));
+        }
+
+        return entity;
     }
 
 }

@@ -1,6 +1,6 @@
 package com.example.todo.components;
 
-import com.example.todo.entities.UserEntity;
+import com.example.todo.entities.User;
 import com.example.todo.requests.SignUpRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +20,7 @@ public class AppComponent {
 
         String encoded = encoder.encode(password);
 
-        PropertyMap<SignUpRequest, UserEntity> personMap = new PropertyMap<SignUpRequest, UserEntity>() {
+        PropertyMap<SignUpRequest, User> personMap = new PropertyMap<SignUpRequest, User>() {
             protected void configure() {
                 map().setPassword(encoded);
             }

@@ -16,6 +16,14 @@
 		<java.version>11</java.version>
 	</properties>
 	<dependencies>
+ 
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-ses -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-ses</artifactId>
+			<version>1.11.1014</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.modelmapper</groupId>

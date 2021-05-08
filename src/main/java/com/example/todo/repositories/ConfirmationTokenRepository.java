@@ -1,8 +1,8 @@
 package com.example.todo.repositories;
 
-import com.example.todo.entities.ConfirmationTokenEntity;
+import com.example.todo.entities.ConfirmationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ConfirmationTokenRepository extends JpaRepository<ConfirmationTokenEntity, Long> {
-    ConfirmationTokenEntity findByConfirmationToken(String ct);
+public interface ConfirmationTokenRepository extends JpaRepository<ConfirmationToken, Long> {
+    ConfirmationToken findByConfirmationToken(String ct);
 }

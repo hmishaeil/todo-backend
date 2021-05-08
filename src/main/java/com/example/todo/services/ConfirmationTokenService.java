@@ -1,8 +1,8 @@
 package com.example.todo.services;
 
-import com.example.todo.entities.ConfirmationTokenEntity;
- 
+import com.example.todo.entities.ConfirmationToken;
 
 public interface ConfirmationTokenService {
-    public ConfirmationTokenEntity save(ConfirmationTokenEntity ct);
+    public ConfirmationToken save(ConfirmationToken ct);
+    public ConfirmationToken findByConfirmationToken(String ct);
 }

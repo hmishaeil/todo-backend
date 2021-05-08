@@ -3,7 +3,7 @@ package com.example.todo.jwt;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.todo.entities.UserEntity;
+import com.example.todo.entities.User;
 import com.example.todo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,7 +30,7 @@ public class JwtInMemoryUserDetailsService implements UserDetailsService {
     // Optional<JwtUserDetails> findFirst = inMemoryUserList.stream().filter(user ->
     // user.getUsername().equals(username)).findFirst();
 
-    UserEntity userEntity = userRepository.findByUsernameIgnoreCase(username);
+    User userEntity = userRepository.findByUsernameIgnoreCase(username);
 
     if (userEntity == null) {
       throw new UsernameNotFoundException(String.format("USER_NOT_FOUND '%s'.", username));

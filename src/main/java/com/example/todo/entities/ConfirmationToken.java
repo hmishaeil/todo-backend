@@ -19,7 +19,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "confirmation_tokens")
-public class ConfirmationTokenEntity {
+public class ConfirmationToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

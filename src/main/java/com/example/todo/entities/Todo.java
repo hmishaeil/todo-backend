@@ -2,7 +2,6 @@ package com.example.todo.entities;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
@@ -11,12 +10,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import java.util.Date;
+
 @Entity
+@Table(name = "todos")
 @Getter
 @Setter
-@Table(name = "roles")
-@NoArgsConstructor
-public class RoleEntity {
+public class Todo {
 
     @Id
     @GeneratedValue
@@ -26,4 +26,11 @@ public class RoleEntity {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private String description;
+
+    private Boolean isDone;
+
+    private Date targetDate;
 }

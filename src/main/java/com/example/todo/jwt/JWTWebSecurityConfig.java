@@ -62,6 +62,7 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/signup**").permitAll()
+                .antMatchers("/verify-email/**").permitAll()
                 .anyRequest()
                 .authenticated();
 
@@ -78,6 +79,7 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
         .ignoring().antMatchers(HttpMethod.OPTIONS, "/**").and()
         .ignoring().antMatchers(HttpMethod.GET, "/" ).and()
         .ignoring().antMatchers(HttpMethod.POST, "/signup**" ).and()
+        .ignoring().antMatchers(HttpMethod.GET, "/verify-email/**" ).and()
         .ignoring().antMatchers("/h2-console/**/**"); //TODO: 
     }
 }

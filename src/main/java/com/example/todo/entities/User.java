@@ -11,6 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,7 +27,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Table(name = "users")
-public class UserEntity implements Serializable {
+public class User implements Serializable {
 
     private static final long serialVersionUID = 4865903039190150223L;
 
@@ -50,6 +51,9 @@ public class UserEntity implements Serializable {
     @Column(nullable = false)
     private boolean isEnabled;
 
+    @Column(nullable = false)
+    private boolean emailVerified;
+
     @CreatedBy
     private String createdBy;
     @LastModifiedBy
@@ -59,7 +63,7 @@ public class UserEntity implements Serializable {
     @LastModifiedDate
     private LocalDate modifiedDate;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @OneToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "ct_id")
-    private ConfirmationTokenEntity confirmationTokenEntity;
+    private ConfirmationToken confirmationToken;
 }

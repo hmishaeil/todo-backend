@@ -42,4 +42,14 @@ public class ExceptionHandlers {
         return new ResponseEntity<ExceptionResponse>(response, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> resourceNotFound(ResourceNotFoundException ex) {
+
+        response.setStatus(HttpStatus.NOT_FOUND.name());
+        response.setErrors(Arrays.asList(ex.getMessage()));
+        response.setTimestamp(LocalDateTime.now());
+
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.NOT_FOUND);
+    }
+
 }
