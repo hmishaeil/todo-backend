@@ -1,8 +1,6 @@
 package com.example.todo.entities;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,14 +12,11 @@ import java.util.Date;
 
 @Entity
 @Table(name = "todos")
-@Getter
-@Setter
+@Data
 public class Todo {
 
     @Id
     @GeneratedValue
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(nullable = false)
@@ -30,7 +25,7 @@ public class Todo {
     @Column(nullable = false)
     private String description;
 
-    private Boolean isDone;
+    private Boolean done;
 
     private Date targetDate;
 }

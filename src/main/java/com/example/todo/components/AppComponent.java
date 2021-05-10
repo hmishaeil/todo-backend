@@ -5,6 +5,7 @@ import com.example.todo.requests.SignUpRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.modelmapper.PropertyMap;
 
@@ -30,5 +31,10 @@ public class AppComponent {
 
         return modelMapper;
 
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 }

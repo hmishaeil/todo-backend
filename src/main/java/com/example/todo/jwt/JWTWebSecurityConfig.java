@@ -63,6 +63,7 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/signup**").permitAll()
                 .antMatchers("/verify-email/**").permitAll()
+                .antMatchers("/login**").permitAll()
                 .anyRequest()
                 .authenticated();
 
@@ -75,7 +76,8 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity webSecurity) throws Exception {
         webSecurity
-        .ignoring().antMatchers(HttpMethod.POST, authenticationPath).and()
+        // .ignoring().antMatchers(HttpMethod.POST, authenticationPath).and()
+        .ignoring().antMatchers("/login**").and()
         .ignoring().antMatchers(HttpMethod.OPTIONS, "/**").and()
         .ignoring().antMatchers(HttpMethod.GET, "/" ).and()
         .ignoring().antMatchers(HttpMethod.POST, "/signup**" ).and()
