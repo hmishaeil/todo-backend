@@ -1,12 +1,8 @@
 package com.example.todo.entities;
 
+import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,18 +12,19 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Entity
-@NoArgsConstructor
-@Getter
-@Setter
 @Table(name = "users")
-public class User implements Serializable {
+@Data
+public class User extends Auditable<String> implements Serializable{
 
     private static final long serialVersionUID = 4865903039190150223L;
 
@@ -37,6 +34,8 @@ public class User implements Serializable {
     private long userId;
 
     @Column(nullable = false, unique = true)
+    @Getter
+    @Setter
     private String email;
 
     @Column(nullable = false, unique = true)
@@ -54,16 +53,22 @@ public class User implements Serializable {
     @Column(nullable = false)
     private boolean emailVerified;
 
-    @CreatedBy
-    private String createdBy;
-    @LastModifiedBy
-    private String modifiedBy;
-    @CreatedDate
-    private LocalDate createdDate;
-    @LastModifiedDate
-    private LocalDate modifiedDate;
-
     @OneToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ct_id")
+    @JoinColumn(name = "CT_ID")
     private ConfirmationToken confirmationToken;
+
+    @OneToMany
+    @JoinTable(name = "USER_TODOS",
+            joinColumns = {@JoinColumn(name = "USER_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "TODO_ID")}
+    )
+    private List<Todo> todos;
+ 
+    @OneToMany
+    @JoinTable(name = "USER_ROLES",
+            joinColumns = {@JoinColumn(name = "USER_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID")}
+    )
+    private Set<Role> roles;
+
 }

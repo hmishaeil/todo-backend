@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.todo.entities.User;
+import com.example.todo.exceptions.EmailNotVerifiedException;
 import com.example.todo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,6 +35,10 @@ public class JwtInMemoryUserDetailsService implements UserDetailsService {
 
     if (userEntity == null) {
       throw new UsernameNotFoundException(String.format("USER_NOT_FOUND '%s'.", username));
+    }
+
+    if(!userEntity.isEmailVerified()){
+      throw new EmailNotVerifiedException(String.format("EMAIL_NOT_VERIFIED_YET '%s'.", username));
     }
 
     UserDetails userDetails = new JwtUserDetails(userEntity.getUserId(), userEntity.getUsername(),

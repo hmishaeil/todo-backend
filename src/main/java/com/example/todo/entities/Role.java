@@ -1,8 +1,8 @@
 package com.example.todo.entities;
 
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
@@ -12,10 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Getter
-@Setter
+@Data
 @Table(name = "roles")
-@NoArgsConstructor
 public class Role {
 
     @Id

@@ -4,6 +4,7 @@ import com.example.todo.entities.Todo;
 import com.example.todo.exceptions.ResourceNotFoundException;
 import com.example.todo.repositories.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,8 +24,12 @@ public class ToDoService {
         return todoRepository.save(td);
     }
 
+    public Todo updateTodo(Todo td) {
+        return todoRepository.save(td);
+    }
+
     public Todo getTodo(Long id) {
-        
+
         Optional<Todo> todo = todoRepository.findById(id);
 
         if (todo.isEmpty()) {
@@ -32,5 +37,17 @@ public class ToDoService {
         }
 
         return todo.get();
+    }
+
+    public ResponseEntity<Void> deleteTodo(Long id) {
+
+        Optional<Todo> todo = todoRepository.findById(id);
+
+        if (todo.isEmpty()) {
+            throw new ResourceNotFoundException(String.format("%s", "Todo not found"));
+        }
+
+        todoRepository.delete(todo.get());
+        return ResponseEntity.noContent().build();
     }
 }

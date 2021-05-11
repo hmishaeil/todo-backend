@@ -1,5 +1,6 @@
 package com.example.todo.exceptions;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -10,8 +11,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 @ControllerAdvice
 public class ExceptionHandlers {
@@ -50,6 +49,16 @@ public class ExceptionHandlers {
         response.setTimestamp(LocalDateTime.now());
 
         return new ResponseEntity<ExceptionResponse>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EmailNotVerifiedException.class)
+    public ResponseEntity<ExceptionResponse> emailNotVerifiedYet(EmailNotVerifiedException ex) {
+
+        response.setStatus(HttpStatus.BAD_REQUEST.name());
+        response.setErrors(Arrays.asList(ex.getMessage()));
+        response.setTimestamp(LocalDateTime.now());
+
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.BAD_REQUEST);
     }
 
 }
