@@ -1,6 +1,7 @@
 package com.example.todo.services.impl;
 
 import com.example.todo.entities.ConfirmationToken;
+import com.example.todo.entities.User;
 import com.example.todo.exceptions.ResourceNotFoundException;
 import com.example.todo.repositories.ConfirmationTokenRepository;
 import com.example.todo.services.ConfirmationTokenService;
@@ -32,6 +33,12 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
         }
 
         return entity;
+    }
+
+    @Override
+    public User getUserByConfirmationToken(String token) {
+        User user = confirmationTokenRepository.getUser(token);
+        return user;
     }
 
 }

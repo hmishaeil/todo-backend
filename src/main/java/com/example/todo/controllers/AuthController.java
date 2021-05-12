@@ -13,7 +13,9 @@ import com.example.todo.responses.ValidateJwtTokenResponse;
 import com.example.todo.services.AwsSesService;
 import com.example.todo.services.ConfirmationTokenService;
 import com.example.todo.services.PasswordResetTokenService;
+import com.example.todo.services.RoleService;
 import com.example.todo.services.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,19 +34,27 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Date;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 public class AuthController {
 
     @Autowired
+    ModelMapper modelMapper;
+
+    @Autowired
     JwtTokenUtil jwtUtil;
 
     @Autowired
-    private UserDetailsService jwtInMemoryUserDetailsService;
+    UserDetailsService jwtInMemoryUserDetailsService;
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    RoleService roleService;
 
     @Autowired
     ConfirmationTokenService confirmationTokenService;
@@ -59,28 +69,32 @@ public class AuthController {
     AwsSesService awsSesService;
 
     @Autowired
-    PasswordEncoder passwordEncoderBean;
+    PasswordEncoder encoder;
 
     @PostMapping("/signup")
     public User signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
 
-        String password = signUpRequest.getPassword();
-
-        User userEntity = appComponent.signUpModelMapper(password).map(signUpRequest, User.class);
+        User user = modelMapper.map(signUpRequest, User.class);
+        user.setRoles(Arrays.asList(roleService.findByName("ROLE_USER")));
+        user.setPassword(encoder.encode(signUpRequest.getPassword()));
+        
+        userService.create(user);
 
         ConfirmationToken ct = new ConfirmationToken();
-        userEntity.setConfirmationToken(ct);
+        ct.setUser(user);
+        confirmationTokenService.save(ct);
 
-        awsSesService.sendEmail(userEntity.getEmail(), ct.getConfirmationToken());
+        awsSesService.sendEmail(user.getEmail(), ct.getConfirmationToken());
 
-        return userService.create(userEntity);
+        return user;
+
     }
 
     @GetMapping("/verify-email/{ct}")
     public ResponseEntity<String> verifyEmail(@PathVariable String ct) {
 
-        User ut = userService.joinUsersByConfirmationTokens(ct);
-        ut.setEmailVerified(true);
+        User ut = confirmationTokenService.getUserByConfirmationToken(ct);
+        ut.setVerified_at(new Date());
 
         userService.update(ut);
 
@@ -126,8 +140,8 @@ public class AuthController {
     @ResponseBody
     public void ResetPassword(@RequestBody ResetPasswordRequest req) {
         PasswordResetToken entity = passwordResetTokenService.getByToken(req.getToken());
-        User user = userService.getUserByUserId(entity.getUser().getUserId());
-        user.setPassword(passwordEncoderBean.encode(req.getPassword()));
+        User user = userService.getUserByUserId(entity.getUser().getId());
+        user.setPassword(encoder.encode(req.getPassword()));
         userService.update(user);
     }
 }

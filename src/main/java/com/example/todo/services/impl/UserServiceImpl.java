@@ -41,16 +41,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User joinUsersByConfirmationTokens(String token) {
-
-        User ue = userRepository.joinByConfirmationTokens(token);
-        if (ue == null) {
-            throw new ResourceNotFoundException(String.format("%s", "Confirmation token not found."));
-        }
-        return ue;
-    }
-
-    @Override
     public User update(User ue) {
         return userRepository.save(ue);
     }

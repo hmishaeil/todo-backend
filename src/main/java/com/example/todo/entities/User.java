@@ -4,22 +4,21 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -31,7 +30,7 @@ public class User extends Auditable<String> implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false, updatable = false)
-    private long userId;
+    private long id;
 
     @Column(nullable = false, unique = true)
     @Getter
@@ -50,25 +49,30 @@ public class User extends Auditable<String> implements Serializable{
     @Column(nullable = false)
     private boolean isEnabled;
 
-    @Column(nullable = false)
-    private boolean emailVerified;
-
-    @OneToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CT_ID")
-    private ConfirmationToken confirmationToken;
+    @Column(nullable = true)
+    private Date verified_at;
 
     @OneToMany
-    @JoinTable(name = "USER_TODOS",
+    @JoinTable(name = "USERS_TODOS",
             joinColumns = {@JoinColumn(name = "USER_ID")},
             inverseJoinColumns = {@JoinColumn(name = "TODO_ID")}
     )
     private List<Todo> todos;
  
-    @OneToMany
-    @JoinTable(name = "USER_ROLES",
-            joinColumns = {@JoinColumn(name = "USER_ID")},
-            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID")}
-    )
-    private Set<Role> roles;
+    @ManyToMany 
+    @JoinTable( 
+        name = "users_roles", 
+        joinColumns = @JoinColumn(
+          name = "user_id", referencedColumnName = "id"), 
+        inverseJoinColumns = @JoinColumn(
+          name = "role_id", referencedColumnName = "id")) 
+    private Collection<Role> roles;
+
+//     @OneToMany
+//     @JoinTable(name = "USERS_ROLES",
+//             joinColumns = {@JoinColumn(name = "USER_ID")},
+//             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID")}
+//     )
+//     private Set<Role> roles;
 
 }
