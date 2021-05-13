@@ -40,7 +40,7 @@ public class MyUserDetailsService implements UserDetailsService {
       throw new UsernameNotFoundException(String.format("USER_NOT_FOUND '%s'.", username));
     }
 
-    if (userEntity.getVerified_at() == null) {
+    if (userEntity.getVerifiedAt() == null) {
       throw new EmailNotVerifiedException(String.format("EMAIL_NOT_VERIFIED_YET '%s'.", username));
     }
 

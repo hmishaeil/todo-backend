@@ -8,7 +8,6 @@ import com.example.todo.jwt.JwtTokenUtil;
 import com.example.todo.requests.InitResetPasswordRequest;
 import com.example.todo.requests.ResetPasswordRequest;
 import com.example.todo.requests.SignUpRequest;
-import com.example.todo.requests.ValidateJwtTokenRequest;
 import com.example.todo.responses.ValidateJwtTokenResponse;
 import com.example.todo.services.AwsSesService;
 import com.example.todo.services.ConfirmationTokenService;
@@ -18,9 +17,6 @@ import com.example.todo.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -93,7 +89,7 @@ public class AuthController {
     public ResponseEntity<String> verifyEmail(@PathVariable String ct) {
 
         User ut = confirmationTokenService.getUserByConfirmationToken(ct);
-        ut.setVerified_at(new Date());
+        ut.setVerifiedAt(new Date());
 
         userService.update(ut);
 

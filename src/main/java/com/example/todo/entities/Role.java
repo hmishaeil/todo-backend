@@ -1,5 +1,6 @@
 package com.example.todo.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -20,6 +21,7 @@ public class Role {
 
     @Id
     @GeneratedValue
+    @JsonIgnore
     private Long id;
 
     @Column(nullable = false)

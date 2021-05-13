@@ -9,5 +9,5 @@ public interface UserService {
     public User getUserByUserId(Long id);
     public User create(User user);
     public User update(User user);
-    public List<User> getList();
+    public List<User> getUsers();
 }

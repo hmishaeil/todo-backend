@@ -8,7 +8,6 @@ import com.example.todo.repositories.PrivilegeRepository;
 import com.example.todo.repositories.RoleRepository;
 import com.example.todo.repositories.TodoRepository;
 import com.example.todo.repositories.UserRepository;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -77,7 +76,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             user.setUsername("admin@cashmino.com");
             user.setRoles(Arrays.asList(adminRole));
             user.setEnabled(true);
-            user.setVerified_at(new Date());
+            user.setVerifiedAt(new Date());
             userRepository.save(user);
         }
 
@@ -100,7 +99,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
                 user.setUsername(username);
                 user.setRoles(Arrays.asList(userRole));
                 user.setEnabled(true);
-                user.setVerified_at(new Date());
+                user.setVerifiedAt(new Date());
                 userRepository.save(user);
             }
         }

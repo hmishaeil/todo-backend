@@ -1,5 +1,6 @@
 package com.example.todo.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.Getter;
@@ -33,6 +34,7 @@ public class User extends Auditable<String> implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(nullable = false, updatable = false)
+  @JsonIgnore
   private long id;
 
   @Column(nullable = false, unique = true)
@@ -53,7 +55,7 @@ public class User extends Auditable<String> implements Serializable {
   private boolean isEnabled;
 
   @Column(nullable = true)
-  private Date verified_at;
+  private Date verifiedAt;
 
   @JsonManagedReference
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
