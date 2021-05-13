@@ -25,8 +25,8 @@ public class Role {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "roles")
-    private Collection<User> users;
+    // @ManyToMany(mappedBy = "roles")
+    // private Collection<User> users;
 
     @ManyToMany
     @JoinTable(

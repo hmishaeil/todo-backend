@@ -16,6 +16,10 @@ public class ToDoService {
     @Autowired
     TodoRepository todoRepository;
 
+    public List<Todo> getTodosForUser(Long userId) {
+        return todoRepository.getUserTodos(userId);
+    }
+
     public List<Todo> getTodos() {
         return todoRepository.findAll();
     }
@@ -49,5 +53,9 @@ public class ToDoService {
 
         todoRepository.delete(todo.get());
         return ResponseEntity.noContent().build();
+    }
+
+    public List<Todo> getUserTodos(Long userId){
+        return todoRepository.getUserTodos(userId);
     }
 }

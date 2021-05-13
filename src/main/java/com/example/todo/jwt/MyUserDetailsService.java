@@ -53,13 +53,17 @@ public class MyUserDetailsService implements UserDetailsService {
 
     // return userDetails;
 
+    Object o = getAuthorities(userEntity.getRoles());
+
     return new org.springframework.security.core.userdetails.User(userEntity.getEmail(), userEntity.getPassword(),
         userEntity.isEnabled(), true, true, true, getAuthorities(userEntity.getRoles()));
   }
 
   private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
 
-    return getGrantedAuthorities(getPrivileges(roles));
+    // return getGrantedAuthorities(getPrivileges(roles));
+
+    return getGrantedAuthorities(roles);
   }
 
   private List<String> getPrivileges(Collection<Role> roles) {
@@ -75,12 +79,23 @@ public class MyUserDetailsService implements UserDetailsService {
     return privileges;
   }
 
-  private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
+  // private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
+  //   List<GrantedAuthority> authorities = new ArrayList<>();
+
+    // for (String privilege : privileges) {
+    //   authorities.add(new SimpleGrantedAuthority(privilege));
+    // }
+    // return authorities;
+  // }
+
+  // mine
+    private List<GrantedAuthority> getGrantedAuthorities(Collection<Role> roles) {
     List<GrantedAuthority> authorities = new ArrayList<>();
-    for (String privilege : privileges) {
-      authorities.add(new SimpleGrantedAuthority(privilege));
+
+    for (Role role : roles) {
+      authorities.add(new SimpleGrantedAuthority(role.getName()));
     }
+
     return authorities;
   }
-
 }

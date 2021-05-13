@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 public class TodoDto {
 
-    public String id;
+    public Long id;
 
     @NotEmpty(message = "name is a required field")
     public String name;

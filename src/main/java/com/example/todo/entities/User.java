@@ -1,11 +1,14 @@
 package com.example.todo.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,56 +26,41 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Data
-public class User extends Auditable<String> implements Serializable{
+public class User extends Auditable<String> implements Serializable {
 
-    private static final long serialVersionUID = 4865903039190150223L;
+  private static final long serialVersionUID = 4865903039190150223L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(nullable = false, updatable = false)
-    private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(nullable = false, updatable = false)
+  private long id;
 
-    @Column(nullable = false, unique = true)
-    @Getter
-    @Setter
-    private String email;
+  @Column(nullable = false, unique = true)
+  @Getter
+  @Setter
+  private String email;
 
-    @Column(nullable = false, unique = true)
-    private String username;
+  @Column(nullable = false, unique = true)
+  private String username;
 
-    private String firstName;
-    private String lastName;
+  private String firstName;
+  private String lastName;
 
-    @Column(nullable = false)
-    private String password;
+  @Column(nullable = false)
+  private String password;
 
-    @Column(nullable = false)
-    private boolean isEnabled;
+  @Column(nullable = false)
+  private boolean isEnabled;
 
-    @Column(nullable = true)
-    private Date verified_at;
+  @Column(nullable = true)
+  private Date verified_at;
 
-    @OneToMany
-    @JoinTable(name = "USERS_TODOS",
-            joinColumns = {@JoinColumn(name = "USER_ID")},
-            inverseJoinColumns = {@JoinColumn(name = "TODO_ID")}
-    )
-    private List<Todo> todos;
- 
-    @ManyToMany 
-    @JoinTable( 
-        name = "users_roles", 
-        joinColumns = @JoinColumn(
-          name = "user_id", referencedColumnName = "id"), 
-        inverseJoinColumns = @JoinColumn(
-          name = "role_id", referencedColumnName = "id")) 
-    private Collection<Role> roles;
+  @JsonManagedReference
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private List<Todo> todos;
 
-//     @OneToMany
-//     @JoinTable(name = "USERS_ROLES",
-//             joinColumns = {@JoinColumn(name = "USER_ID")},
-//             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID")}
-//     )
-//     private Set<Role> roles;
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+  private Collection<Role> roles;
 
 }

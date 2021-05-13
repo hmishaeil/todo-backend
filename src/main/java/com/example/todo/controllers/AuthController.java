@@ -18,6 +18,7 @@ import com.example.todo.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,9 +49,6 @@ public class AuthController {
     JwtTokenUtil jwtUtil;
 
     @Autowired
-    UserDetailsService jwtInMemoryUserDetailsService;
-
-    @Autowired
     UserService userService;
 
     @Autowired
@@ -77,6 +75,7 @@ public class AuthController {
         User user = modelMapper.map(signUpRequest, User.class);
         user.setRoles(Arrays.asList(roleService.findByName("ROLE_USER")));
         user.setPassword(encoder.encode(signUpRequest.getPassword()));
+        user.setEnabled(true);
         
         userService.create(user);
 
@@ -107,18 +106,6 @@ public class AuthController {
         }
 
         return ResponseEntity.ok(actual);
-    }
-
-    @PostMapping("/validate-jwt")
-    public ResponseEntity<ValidateJwtTokenResponse> validateJwt(@RequestBody ValidateJwtTokenRequest request) {
-
-        UserDetails userDetails = jwtInMemoryUserDetailsService.loadUserByUsername(request.username);
-        Boolean validationResult = jwtUtil.validateToken(request.token, userDetails);
-
-        ValidateJwtTokenResponse response = new ValidateJwtTokenResponse();
-        response.valid = validationResult;
-
-        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/request-reset-password")
