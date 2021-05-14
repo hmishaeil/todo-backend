@@ -49,11 +49,13 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         Privilege writePrivilege = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
 
         List<Privilege> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege);
+        createRoleIfNotFound("ROLE_ROOT", Arrays.asList(readPrivilege));
         createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
+        createRoleIfNotFound("ROLE_SUPPORT", Arrays.asList(readPrivilege));
         createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege));
 
-        createAdminUserIfNotFound();
-        createRegularUserIfNotFound();
+        createUsersIfNotFound();
+
         createTodosIfNotFound();
 
         alreadySetup = true;
@@ -61,31 +63,65 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     @Transactional
-    User createAdminUserIfNotFound() {
+    void createUsersIfNotFound() {
 
-        String username = "admin@cashmino.com";
-
-        User user = userRepository.findByUsernameIgnoreCase(username);
-        if (user == null) {
-            Role adminRole = roleRepository.findByName("ROLE_ADMIN");
-            user = new User();
-            user.setFirstName("f admin");
-            user.setLastName("l admin");
-            user.setPassword(passwordEncoder.encode("password"));
-            user.setEmail("admin@cashmino.com");
-            user.setUsername("admin@cashmino.com");
-            user.setRoles(Arrays.asList(adminRole));
-            user.setEnabled(true);
-            user.setVerifiedAt(new Date());
-            userRepository.save(user);
+        // Root users
+        for (int i = 1; i <= 2; i++) {
+            String username = "root" + i + "@cashmino.com";
+            User user = userRepository.findByUsernameIgnoreCase(username);
+            if (user == null) {
+                Role userRole = roleRepository.findByName("ROLE_ROOT");
+                user = new User();
+                user.setFirstName("f root");
+                user.setLastName("l root");
+                user.setPassword(passwordEncoder.encode("password"));
+                user.setUsername(username);
+                user.setRoles(Arrays.asList(userRole));
+                user.setEnabled(true);
+                user.setVerifiedAt(new Date());
+                userRepository.save(user);
+            }
         }
 
-        return user;
-    }
+        // Admin users
+        for (int i = 1; i <= 3; i++) {
+            String username = "admin" + i + "@cashmino.com";
+            User user = userRepository.findByUsernameIgnoreCase(username);
+            if (user == null) {
+                Role userRole = roleRepository.findByName("ROLE_ADMIN");
+                user = new User();
+                user.setFirstName("f admin");
+                user.setLastName("l admin");
+                user.setPassword(passwordEncoder.encode("password"));
+                user.setUsername(username);
+                user.setRoles(Arrays.asList(userRole));
+                user.setEnabled(true);
+                user.setVerifiedAt(new Date());
+                user.setInternalNote("This is for internal usage. User won't see this message.");
+                userRepository.save(user);
+            }
+        }
 
-    @Transactional
-    void createRegularUserIfNotFound() {
+        // Support users
+        for (int i = 1; i <= 5; i++) {
+            String username = "support" + i + "@cashmino.com";
+            User user = userRepository.findByUsernameIgnoreCase(username);
+            if (user == null) {
+                Role userRole = roleRepository.findByName("ROLE_SUPPORT");
+                user = new User();
+                user.setFirstName("f support");
+                user.setLastName("l support");
+                user.setPassword(passwordEncoder.encode("password"));
+                user.setUsername(username);
+                user.setRoles(Arrays.asList(userRole));
+                user.setEnabled(true);
+                user.setVerifiedAt(new Date());
+                user.setInternalNote("This is for internal usage. User won't see this message.");
+                userRepository.save(user);
+            }
+        }
 
+        // Regular users
         for (int i = 1; i <= 10; i++) {
             String username = "user" + i + "@cashmino.com";
             User user = userRepository.findByUsernameIgnoreCase(username);
@@ -95,7 +131,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
                 user.setFirstName("f user");
                 user.setLastName("l user");
                 user.setPassword(passwordEncoder.encode("password"));
-                user.setEmail(username);
                 user.setUsername(username);
                 user.setRoles(Arrays.asList(userRole));
                 user.setEnabled(true);

@@ -1,16 +1,11 @@
 package com.example.todo.controllers;
 
-import java.util.Objects;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.example.todo.exceptions.AuthenticationException;
 import com.example.todo.jwt.JwtTokenUtil;
-import com.example.todo.jwt.resource.AuthenticationException;
-import com.example.todo.jwt.resource.JwtTokenRequest;
-import com.example.todo.jwt.resource.JwtTokenResponse;
+import com.example.todo.requests.JwtTokenRequest;
+import com.example.todo.responses.JwtTokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -19,15 +14,18 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
+import java.util.Objects;
+
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-public class JwtAuthenticationRestController {
+public class JwtAuthenticationController {
 
   @Value("${jwt.http.request.header}")
   private String tokenHeader;
@@ -72,12 +70,13 @@ public class JwtAuthenticationRestController {
     }
   }
 
-  @ExceptionHandler({ AuthenticationException.class })
-  public ResponseEntity<String> handleAuthenticationException(AuthenticationException e) {
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-  }
+  // @ExceptionHandler({ AuthenticationException.class })
+  // public ResponseEntity<String> handleAuthenticationException(AuthenticationException e) {
+  //   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+  // }
 
   private void authenticate(String username, String password) {
+    
     Objects.requireNonNull(username);
     Objects.requireNonNull(password);
 

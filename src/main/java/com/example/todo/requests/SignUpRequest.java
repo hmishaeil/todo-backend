@@ -6,9 +6,6 @@ import javax.validation.constraints.NotEmpty;
 
 @Data
 public class SignUpRequest {
-
-    @NotEmpty(message = "email is a required field")
-    private String email;
     
     @NotEmpty(message = "username is a required field")
     private String username;

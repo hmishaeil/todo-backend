@@ -18,12 +18,14 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 import java.util.UUID;
 
-@NamedNativeQuery(name = "ConfirmationToken.getUser", query = "select * from users u inner join confirmation_tokens c on u.id = c.user_id where c.confirmation_token = ?1", resultClass = User.class)
-
 @Entity
 @Data
-@Table(name = "confirmation_tokens")
-public class ConfirmationToken {
+@Table(name = "email_verifications")
+@NamedNativeQuery(name = "EmailVerification.getUser", 
+                  query = "select * from users u inner join email_verifications c on u.id = c.user_id where c.confirmation_token = ?1", 
+                  resultClass = User.class)
+
+public class EmailVerification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -36,7 +38,7 @@ public class ConfirmationToken {
     private Date createdAt = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date confirmedAt = new Date();
+    private Date confirmedAt;
 
     @OneToOne(targetEntity = User.class, optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)

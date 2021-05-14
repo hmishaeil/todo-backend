@@ -1,11 +1,5 @@
 package com.example.todo.jwt;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import com.example.todo.entities.Privilege;
 import com.example.todo.entities.Role;
 import com.example.todo.entities.User;
 import com.example.todo.exceptions.EmailNotVerifiedException;
@@ -18,6 +12,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
@@ -44,52 +42,16 @@ public class MyUserDetailsService implements UserDetailsService {
       throw new EmailNotVerifiedException(String.format("EMAIL_NOT_VERIFIED_YET '%s'.", username));
     }
 
-    // UserDetails userDetails = new MyUserDetails(userEntity.getId(),
-    // userEntity.getUsername(), userEntity.getPassword(), "ROLE_USER_2");
-    // UserDetails userDetails = new MyUserDetails(userEntity.getId(),
-    // userEntity.getUsername(), userEntity.getPassword(),
-    // getAuthorities(Arrays.asList(
-    // roleRepository.findByName("ROLE_USER"))));
-
-    // return userDetails;
-
-    Object o = getAuthorities(userEntity.getRoles());
-
-    return new org.springframework.security.core.userdetails.User(userEntity.getEmail(), userEntity.getPassword(),
+    return new org.springframework.security.core.userdetails.User(userEntity.getUsername(), userEntity.getPassword(),
         userEntity.isEnabled(), true, true, true, getAuthorities(userEntity.getRoles()));
   }
 
   private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
 
-    // return getGrantedAuthorities(getPrivileges(roles));
-
     return getGrantedAuthorities(roles);
   }
 
-  private List<String> getPrivileges(Collection<Role> roles) {
-
-    List<String> privileges = new ArrayList<>();
-    List<Privilege> collection = new ArrayList<>();
-    for (Role role : roles) {
-      collection.addAll(role.getPrivileges());
-    }
-    for (Privilege item : collection) {
-      privileges.add(item.getName());
-    }
-    return privileges;
-  }
-
-  // private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
-  //   List<GrantedAuthority> authorities = new ArrayList<>();
-
-    // for (String privilege : privileges) {
-    //   authorities.add(new SimpleGrantedAuthority(privilege));
-    // }
-    // return authorities;
-  // }
-
-  // mine
-    private List<GrantedAuthority> getGrantedAuthorities(Collection<Role> roles) {
+  private List<GrantedAuthority> getGrantedAuthorities(Collection<Role> roles) {
     List<GrantedAuthority> authorities = new ArrayList<>();
 
     for (Role role : roles) {

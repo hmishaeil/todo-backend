@@ -1,4 +1,4 @@
-package com.example.todo.jwt.resource;
+package com.example.todo.requests;
 
 import lombok.Data;
 

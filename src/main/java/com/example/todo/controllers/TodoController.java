@@ -3,8 +3,8 @@ package com.example.todo.controllers;
 import com.example.todo.entities.Todo;
 import com.example.todo.entities.User;
 import com.example.todo.requests.TodoDto;
-import com.example.todo.services.ToDoService;
-import com.example.todo.services.UserService;
+import com.example.todo.services.interfaces.IToDoService;
+import com.example.todo.services.interfaces.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +29,10 @@ import java.util.List;
 public class TodoController {
 
     @Autowired
-    ToDoService todoService;
+    IToDoService todoService;
 
     @Autowired
-    UserService userService;
+    IUserService userService;
 
     @Autowired
     ModelMapper modelMapper;
@@ -40,8 +40,6 @@ public class TodoController {
     @GetMapping("/todos")
     @ResponseBody
     public List<Todo> getTodos(Authentication authentication) {
-
-        log.info("{}", authentication.getAuthorities().toString().contains("ADMIN"));
 
         if (authentication.getAuthorities().toString().contains("ADMIN")) {
             return todoService.getTodos();

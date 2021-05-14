@@ -1,4 +1,4 @@
-package com.example.todo.services;
+package com.example.todo.services.interfaces;
 
 import com.example.todo.entities.Todo;
 import com.example.todo.exceptions.ResourceNotFoundException;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ToDoService {
+public class IToDoService {
 
     @Autowired
     TodoRepository todoRepository;

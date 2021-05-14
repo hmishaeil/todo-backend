@@ -61,4 +61,36 @@ public class ExceptionHandlers {
         return new ResponseEntity<ExceptionResponse>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(SendingEmailException.class)
+    public ResponseEntity<ExceptionResponse> sendingEmailFailed(SendingEmailException ex) {
+
+        response.setStatus(HttpStatus.BAD_REQUEST.name());
+        response.setErrors(Arrays.asList(ex.getMessage()));
+        response.setTimestamp(LocalDateTime.now());
+
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ AuthenticationException.class })
+    public ResponseEntity<ExceptionResponse> handleAuthenticationException(AuthenticationException ex) {
+
+        response.setStatus(HttpStatus.UNAUTHORIZED.name());
+        response.setErrors(Arrays.asList(ex.getMessage()));
+        response.setTimestamp(LocalDateTime.now());
+
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.UNAUTHORIZED);
+
+    }
+
+    @ExceptionHandler({ InternalServerException.class })
+    public ResponseEntity<ExceptionResponse> handleInternalServerException(InternalServerException ex) {
+
+        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.name());
+        response.setErrors(Arrays.asList(ex.getMessage()));
+        response.setTimestamp(LocalDateTime.now());
+
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
+    }
+
 }

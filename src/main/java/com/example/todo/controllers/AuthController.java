@@ -1,19 +1,22 @@
 package com.example.todo.controllers;
 
 import com.example.todo.components.AppComponent;
-import com.example.todo.entities.ConfirmationToken;
+import com.example.todo.entities.EmailVerification;
 import com.example.todo.entities.PasswordResetToken;
 import com.example.todo.entities.User;
+import com.example.todo.exceptions.EmailNotVerifiedException;
+import com.example.todo.exceptions.InternalServerException;
+import com.example.todo.exceptions.ResourceAlreadyExistsException;
+import com.example.todo.exceptions.ResourceNotFoundException;
 import com.example.todo.jwt.JwtTokenUtil;
 import com.example.todo.requests.InitResetPasswordRequest;
 import com.example.todo.requests.ResetPasswordRequest;
 import com.example.todo.requests.SignUpRequest;
-import com.example.todo.responses.ValidateJwtTokenResponse;
-import com.example.todo.services.AwsSesService;
-import com.example.todo.services.ConfirmationTokenService;
-import com.example.todo.services.PasswordResetTokenService;
-import com.example.todo.services.RoleService;
-import com.example.todo.services.UserService;
+import com.example.todo.services.interfaces.IEmailService;
+import com.example.todo.services.interfaces.IEmailVerificationService;
+import com.example.todo.services.interfaces.IPasswordResetTokenService;
+import com.example.todo.services.interfaces.IRoleService;
+import com.example.todo.services.interfaces.IUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import java.io.IOException;
@@ -45,41 +49,47 @@ public class AuthController {
     JwtTokenUtil jwtUtil;
 
     @Autowired
-    UserService userService;
+    IUserService userService;
 
     @Autowired
-    RoleService roleService;
+    IRoleService roleService;
 
     @Autowired
-    ConfirmationTokenService confirmationTokenService;
+    IEmailVerificationService emailVerificationService;
 
     @Autowired
-    PasswordResetTokenService passwordResetTokenService;
+    IPasswordResetTokenService passwordResetTokenService;
 
     @Autowired
     AppComponent appComponent;
 
     @Autowired
-    AwsSesService awsSesService;
+    IEmailService awsSesService;
 
     @Autowired
     PasswordEncoder encoder;
 
     @PostMapping("/signup")
+    @Transactional
     public User signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
+
+        User existing = userService.getUserByUsername(signUpRequest.getUsername());
+        if (existing != null) {
+            throw new ResourceAlreadyExistsException(String.format("User already exists."));
+        }
 
         User user = modelMapper.map(signUpRequest, User.class);
         user.setRoles(Arrays.asList(roleService.findByName("ROLE_USER")));
         user.setPassword(encoder.encode(signUpRequest.getPassword()));
         user.setEnabled(true);
-        
+
         userService.create(user);
 
-        ConfirmationToken ct = new ConfirmationToken();
+        EmailVerification ct = new EmailVerification();
         ct.setUser(user);
-        confirmationTokenService.save(ct);
+        emailVerificationService.save(ct);
 
-        awsSesService.sendEmail(user.getEmail(), ct.getConfirmationToken());
+        awsSesService.sendEmail("CONFIRMATION_TOKEN", user.getUsername(), ct.getConfirmationToken());
 
         return user;
 
@@ -88,43 +98,58 @@ public class AuthController {
     @GetMapping("/verify-email/{ct}")
     public ResponseEntity<String> verifyEmail(@PathVariable String ct) {
 
-        User ut = confirmationTokenService.getUserByConfirmationToken(ct);
+        User ut = emailVerificationService.getUserByConfirmationToken(ct);
         ut.setVerifiedAt(new Date());
 
         userService.update(ut);
 
-        Path fileName = Path.of("src/main/resources/templates/verify_email/email_verified.html");
-        String actual = null;
+        Path fileName = Path.of("src/main/resources/templates/email-verified.html");
+        String content = null;
+
         try {
-            actual = Files.readString(fileName);
+            content = Files.readString(fileName);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new InternalServerException(e.getMessage());
         }
 
-        return ResponseEntity.ok(actual);
+        return ResponseEntity.ok(content);
     }
 
     @PostMapping("/request-reset-password")
-    public ResponseEntity<Void> RequestResetPassword(@RequestBody InitResetPasswordRequest request) {
+    @ResponseBody
+    public void RequestResetPassword(@RequestBody InitResetPasswordRequest request) {
 
-        User u = userService.getUserByUsername(request.getUsername());
+        User user = userService.getUserByUsername(request.getUsername());
+
+        if (user == null) {
+            throw new ResourceNotFoundException("User");
+        }
+
+        if (user.getVerifiedAt() == null) {
+            throw new EmailNotVerifiedException();
+        }
 
         PasswordResetToken p = new PasswordResetToken();
-        p.setUser(u);
+        p.setUser(user);
         passwordResetTokenService.save(p);
 
-        awsSesService.sendResetEmail(u.getEmail(), p.getToken());
-        ValidateJwtTokenResponse response = new ValidateJwtTokenResponse();
-        response.valid = true;
-        return ResponseEntity.ok().build();
+        awsSesService.sendEmail("RESET_PASSWORD_TOKEN", user.getUsername(), p.getToken());
+
     }
 
     @PostMapping("/reset-password")
     @ResponseBody
     public void ResetPassword(@RequestBody ResetPasswordRequest req) {
-        PasswordResetToken entity = passwordResetTokenService.getByToken(req.getToken());
-        User user = userService.getUserByUserId(entity.getUser().getId());
+
+        PasswordResetToken token = passwordResetTokenService.getByToken(req.getToken());
+
+        if (token == null) {
+            throw new ResourceNotFoundException("Token");
+        }
+
+        User user = userService.getUserByUserId(token.getUser().getId());
         user.setPassword(encoder.encode(req.getPassword()));
+
         userService.update(user);
     }
 }

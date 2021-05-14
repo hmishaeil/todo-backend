@@ -34,13 +34,7 @@ public class User extends Auditable<String> implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(nullable = false, updatable = false)
-  @JsonIgnore
   private long id;
-
-  @Column(nullable = false, unique = true)
-  @Getter
-  @Setter
-  private String email;
 
   @Column(nullable = false, unique = true)
   private String username;
@@ -56,6 +50,9 @@ public class User extends Auditable<String> implements Serializable {
 
   @Column(nullable = true)
   private Date verifiedAt;
+
+  @Column(nullable = true)
+  private String internalNote;
 
   @JsonManagedReference
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

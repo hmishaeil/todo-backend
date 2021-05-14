@@ -1,10 +1,10 @@
-package com.example.todo.services.impl;
+package com.example.todo.services.implementations;
 
 import com.example.todo.entities.User;
 import com.example.todo.exceptions.ResourceAlreadyExistsException;
 import com.example.todo.exceptions.ResourceNotFoundException;
 import com.example.todo.repositories.UserRepository;
-import com.example.todo.services.UserService;
+import com.example.todo.services.interfaces.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserService implements IUserService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     UserRepository userRepository;
@@ -26,11 +26,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User create(final User user) {
         LOGGER.debug("Creating {}", user);
-
-        User existing = userRepository.findByEmailIgnoreCase(user.getEmail());
-        if (existing != null) {
-            throw new ResourceAlreadyExistsException(String.format("User already exists."));
-        }
         return userRepository.save(user);
     }
 
@@ -42,16 +37,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(User ue) {
-        return userRepository.save(ue);
+
+        User user = userRepository.findByUsernameIgnoreCase(ue.getUsername());
+        if (user == null) {
+            throw new ResourceNotFoundException(String.format("%s", "User not found."));
+        }
+
+        user.setEnabled(ue.isEnabled());
+        user.setInternalNote(ue.getInternalNote());
+
+        return userRepository.save(user);
     }
 
     @Override
     public User getUserByUsername(String username) {
 
         User user = userRepository.findByUsernameIgnoreCase(username);
-        if (user == null) {
-            throw new ResourceNotFoundException(String.format("%s", "User not found."));
-        }
+
         return user;
     }
 
@@ -65,5 +67,7 @@ public class UserServiceImpl implements UserService {
 
         return user.get();
     }
+
+ 
 
 }

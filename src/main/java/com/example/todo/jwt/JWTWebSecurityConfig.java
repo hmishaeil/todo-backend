@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -78,7 +78,6 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity webSecurity) throws Exception {
         webSecurity
-        // .ignoring().antMatchers(HttpMethod.POST, authenticationPath).and()
         .ignoring().antMatchers("/login**").and()
         .ignoring().antMatchers(HttpMethod.OPTIONS, "/**").and()
         .ignoring().antMatchers(HttpMethod.GET, "/" ).and()
