@@ -38,6 +38,10 @@ public class EmailVerificationService implements IEmailVerificationService {
     @Override
     public User getUserByConfirmationToken(String token) {
         User user = emailVerificationRepository.getUser(token);
+
+        if (user == null) {
+            throw new ResourceNotFoundException("Token");
+        }
         return user;
     }
 

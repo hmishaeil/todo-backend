@@ -8,7 +8,6 @@ import com.example.todo.exceptions.EmailNotVerifiedException;
 import com.example.todo.exceptions.InternalServerException;
 import com.example.todo.exceptions.ResourceAlreadyExistsException;
 import com.example.todo.exceptions.ResourceNotFoundException;
-import com.example.todo.jwt.JwtTokenUtil;
 import com.example.todo.requests.InitResetPasswordRequest;
 import com.example.todo.requests.ResetPasswordRequest;
 import com.example.todo.requests.SignUpRequest;
@@ -46,9 +45,6 @@ public class AuthController {
     ModelMapper modelMapper;
 
     @Autowired
-    JwtTokenUtil jwtUtil;
-
-    @Autowired
     IUserService userService;
 
     @Autowired
@@ -61,10 +57,7 @@ public class AuthController {
     IPasswordResetTokenService passwordResetTokenService;
 
     @Autowired
-    AppComponent appComponent;
-
-    @Autowired
-    IEmailService awsSesService;
+    IEmailService emailService;
 
     @Autowired
     PasswordEncoder encoder;
@@ -73,8 +66,7 @@ public class AuthController {
     @Transactional
     public User signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
 
-        User existing = userService.getUserByUsername(signUpRequest.getUsername());
-        if (existing != null) {
+        if(userService.checkIfUserExists(signUpRequest.getUsername())){
             throw new ResourceAlreadyExistsException(String.format("User already exists."));
         }
 
@@ -89,30 +81,30 @@ public class AuthController {
         ct.setUser(user);
         emailVerificationService.save(ct);
 
-        awsSesService.sendEmail("CONFIRMATION_TOKEN", user.getUsername(), ct.getConfirmationToken());
+        emailService.sendEmail("CONFIRMATION_TOKEN", user.getUsername(), ct.getConfirmationToken());
 
         return user;
 
     }
 
     @GetMapping("/verify-email/{ct}")
-    public ResponseEntity<String> verifyEmail(@PathVariable String ct) {
+    @ResponseBody
+    public void verifyEmail(@PathVariable String ct) {
 
         User ut = emailVerificationService.getUserByConfirmationToken(ct);
         ut.setVerifiedAt(new Date());
 
         userService.update(ut);
 
-        Path fileName = Path.of("src/main/resources/templates/email-verified.html");
-        String content = null;
+        // Path fileName = Path.of("src/main/resources/templates/email-verified.html");
+        // String content = null;
 
-        try {
-            content = Files.readString(fileName);
-        } catch (IOException e) {
-            throw new InternalServerException(e.getMessage());
-        }
+        // try {
+        //     content = Files.readString(fileName);
+        // } catch (IOException e) {
+        //     throw new InternalServerException(e.getMessage());
+        // }
 
-        return ResponseEntity.ok(content);
     }
 
     @PostMapping("/request-reset-password")
@@ -120,10 +112,6 @@ public class AuthController {
     public void RequestResetPassword(@RequestBody InitResetPasswordRequest request) {
 
         User user = userService.getUserByUsername(request.getUsername());
-
-        if (user == null) {
-            throw new ResourceNotFoundException("User");
-        }
 
         if (user.getVerifiedAt() == null) {
             throw new EmailNotVerifiedException();
@@ -133,7 +121,7 @@ public class AuthController {
         p.setUser(user);
         passwordResetTokenService.save(p);
 
-        awsSesService.sendEmail("RESET_PASSWORD_TOKEN", user.getUsername(), p.getToken());
+        emailService.sendEmail("RESET_PASSWORD_TOKEN", user.getUsername(), p.getToken());
 
     }
 
@@ -143,9 +131,7 @@ public class AuthController {
 
         PasswordResetToken token = passwordResetTokenService.getByToken(req.getToken());
 
-        if (token == null) {
-            throw new ResourceNotFoundException("Token");
-        }
+
 
         User user = userService.getUserByUserId(token.getUser().getId());
         user.setPassword(encoder.encode(req.getPassword()));

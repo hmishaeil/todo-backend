@@ -54,6 +54,10 @@ public class UserService implements IUserService {
 
         User user = userRepository.findByUsernameIgnoreCase(username);
 
+        if (user == null) {
+            throw new ResourceNotFoundException("User");
+        }
+
         return user;
     }
 
@@ -68,6 +72,9 @@ public class UserService implements IUserService {
         return user.get();
     }
 
- 
+    @Override
+    public Boolean checkIfUserExists(String username) {
+        return userRepository.findByUsernameIgnoreCase(username) != null ? true : false;
+    }
 
 }

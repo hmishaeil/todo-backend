@@ -1,6 +1,7 @@
 package com.example.todo.services.implementations;
 
 import com.example.todo.entities.PasswordResetToken;
+import com.example.todo.exceptions.ResourceNotFoundException;
 import com.example.todo.repositories.PasswordResetTokenRepository;
 import com.example.todo.services.interfaces.IPasswordResetTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,14 @@ public class PasswordResetTokenService implements IPasswordResetTokenService {
 
     @Override
     public PasswordResetToken getByToken(String token) {
-        return  repo.findByToken(token);
+
+        PasswordResetToken entity = repo.findByToken(token);
+
+        if (entity == null) {
+            throw new ResourceNotFoundException("Token");
+        }
+
+        return entity;
     }
 
     @Override

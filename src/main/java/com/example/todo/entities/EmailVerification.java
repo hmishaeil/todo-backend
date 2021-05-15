@@ -37,9 +37,6 @@ public class EmailVerification {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date confirmedAt;
-
     @OneToOne(targetEntity = User.class, optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
