@@ -51,8 +51,8 @@ public class ExceptionHandlers {
         return new ResponseEntity<ExceptionResponse>(response, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(EmailNotVerifiedException.class)
-    public ResponseEntity<ExceptionResponse> emailNotVerifiedYet(EmailNotVerifiedException ex) {
+    @ExceptionHandler( { EmailNotVerifiedException.class, SendingEmailException.class })
+    public ResponseEntity<ExceptionResponse> emailNotVerifiedYet(RuntimeException ex) {
 
         response.setStatus(HttpStatus.BAD_REQUEST.name());
         response.setErrors(Arrays.asList(ex.getMessage()));
@@ -61,15 +61,15 @@ public class ExceptionHandlers {
         return new ResponseEntity<ExceptionResponse>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(SendingEmailException.class)
-    public ResponseEntity<ExceptionResponse> sendingEmailFailed(SendingEmailException ex) {
+    // @ExceptionHandler(SendingEmailException.class)
+    // public ResponseEntity<ExceptionResponse> sendingEmailFailed(SendingEmailException ex) {
 
-        response.setStatus(HttpStatus.BAD_REQUEST.name());
-        response.setErrors(Arrays.asList(ex.getMessage()));
-        response.setTimestamp(LocalDateTime.now());
+    //     response.setStatus(HttpStatus.BAD_REQUEST.name());
+    //     response.setErrors(Arrays.asList(ex.getMessage()));
+    //     response.setTimestamp(LocalDateTime.now());
 
-        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.BAD_REQUEST);
-    }
+    //     return new ResponseEntity<ExceptionResponse>(response, HttpStatus.BAD_REQUEST);
+    // }
 
     @ExceptionHandler({ AuthenticationException.class })
     public ResponseEntity<ExceptionResponse> handleAuthenticationException(AuthenticationException ex) {

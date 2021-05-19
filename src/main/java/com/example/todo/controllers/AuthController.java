@@ -1,13 +1,10 @@
 package com.example.todo.controllers;
 
-import com.example.todo.components.AppComponent;
 import com.example.todo.entities.EmailVerification;
 import com.example.todo.entities.PasswordResetToken;
 import com.example.todo.entities.User;
 import com.example.todo.exceptions.EmailNotVerifiedException;
-import com.example.todo.exceptions.InternalServerException;
 import com.example.todo.exceptions.ResourceAlreadyExistsException;
-import com.example.todo.exceptions.ResourceNotFoundException;
 import com.example.todo.requests.InitResetPasswordRequest;
 import com.example.todo.requests.ResetPasswordRequest;
 import com.example.todo.requests.SignUpRequest;
@@ -18,7 +15,6 @@ import com.example.todo.services.interfaces.IRoleService;
 import com.example.todo.services.interfaces.IUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,9 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -96,15 +89,6 @@ public class AuthController {
 
         userService.update(ut);
 
-        // Path fileName = Path.of("src/main/resources/templates/email-verified.html");
-        // String content = null;
-
-        // try {
-        //     content = Files.readString(fileName);
-        // } catch (IOException e) {
-        //     throw new InternalServerException(e.getMessage());
-        // }
-
     }
 
     @PostMapping("/request-reset-password")
@@ -130,8 +114,6 @@ public class AuthController {
     public void ResetPassword(@RequestBody ResetPasswordRequest req) {
 
         PasswordResetToken token = passwordResetTokenService.getByToken(req.getToken());
-
-
 
         User user = userService.getUserByUserId(token.getUser().getId());
         user.setPassword(encoder.encode(req.getPassword()));

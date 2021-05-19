@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Service
-public class MyUserDetailsService implements UserDetailsService {
+public class JwtUserDetailsService implements UserDetailsService {
 
   static {
   }

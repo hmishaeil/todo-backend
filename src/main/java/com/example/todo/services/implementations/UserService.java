@@ -1,7 +1,6 @@
 package com.example.todo.services.implementations;
 
 import com.example.todo.entities.User;
-import com.example.todo.exceptions.ResourceAlreadyExistsException;
 import com.example.todo.exceptions.ResourceNotFoundException;
 import com.example.todo.repositories.UserRepository;
 import com.example.todo.services.interfaces.IUserService;

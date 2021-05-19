@@ -5,7 +5,6 @@ import com.example.todo.entities.User;
 import com.example.todo.requests.TodoDto;
 import com.example.todo.services.interfaces.IToDoService;
 import com.example.todo.services.interfaces.IUserService;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 import java.util.List;
 
-@Slf4j
 @RestController
 @CrossOrigin("http://localhost:4200")
 public class TodoController {
