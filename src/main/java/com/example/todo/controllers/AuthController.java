@@ -5,6 +5,7 @@ import com.example.todo.entities.PasswordResetToken;
 import com.example.todo.entities.User;
 import com.example.todo.exceptions.EmailNotVerifiedException;
 import com.example.todo.exceptions.ResourceAlreadyExistsException;
+import com.example.todo.jwt.JwtTokenUtil;
 import com.example.todo.requests.InitResetPasswordRequest;
 import com.example.todo.requests.ResetPasswordRequest;
 import com.example.todo.requests.SignUpRequest;
@@ -30,7 +31,7 @@ import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.Date;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 @RestController
 public class AuthController {
 
@@ -54,6 +55,9 @@ public class AuthController {
 
     @Autowired
     PasswordEncoder encoder;
+
+    @Autowired
+    JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/signup")
     @Transactional
@@ -120,4 +124,11 @@ public class AuthController {
 
         userService.update(user);
     }
+
+    @GetMapping("/validate-jwt")
+    @ResponseBody
+    public boolean validateJwtToken(@PathVariable String token, @PathVariable String username){
+        return jwtTokenUtil.validateToken(token, username);
+    }
+
 }

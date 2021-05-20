@@ -23,7 +23,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class TodoController {
 
     @Autowired

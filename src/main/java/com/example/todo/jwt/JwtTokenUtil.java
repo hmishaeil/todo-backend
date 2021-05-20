@@ -89,9 +89,10 @@ public class JwtTokenUtil implements Serializable {
     return Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, secret).compact();
   }
 
-  public Boolean validateToken(String token, UserDetails userDetails) {
-    final String username = getUsernameFromToken(token);
-    return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+  public Boolean validateToken(String token, String username) {
+    final String tokenUsername = getUsernameFromToken(token);
+    // return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    return (tokenUsername.equals(username) && !isTokenExpired(token));
   }
 
   private Date calculateExpirationDate(Date createdDate) {
