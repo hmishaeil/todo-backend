@@ -12,7 +12,7 @@ public class AddUserRequest {
     private String username;
 
     @NotEmpty(message = "roles is a required field")
-    private Role[] roles;
+    private String role;
 
     private Boolean enabled;
     private String internalNote;

@@ -66,6 +66,7 @@ public class EmailService implements IEmailService {
                                 fileContent = Files.readString(fileName);
                                 result = fileContent.replace("CONFIRMATION_TOKEN", token);
                                 SUBJECT = "Email Verification";
+                                
                                 break;
                         case "RESET_PASSWORD_TOKEN":
                                 fileName = Path.of("src/main/resources/templates/reset-password.html");
@@ -73,6 +74,13 @@ public class EmailService implements IEmailService {
                                 result = fileContent.replace("RESET_PASSWORD_TOKEN", token).replace("EMAIL_ADDRESS",
                                                 "email@email.com");
                                 SUBJECT = "Reset Password";
+
+                                break;
+                        case "ADD_USER":
+                                fileName = Path.of("src/main/resources/templates/new-user.html");
+                                fileContent = Files.readString(fileName);
+                                result = fileContent.replace("TEMPORARY_PASSWORD", token);
+                                SUBJECT = "Login to your new account";
 
                                 break;
                         default:

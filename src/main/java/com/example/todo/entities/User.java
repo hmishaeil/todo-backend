@@ -25,7 +25,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Data
-public class User extends Auditable<String> implements Serializable {
+public class User extends Auditable<Long> implements Serializable {
 
   private static final long serialVersionUID = 4865903039190150223L;
 

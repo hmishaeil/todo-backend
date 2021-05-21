@@ -22,9 +22,8 @@ public class UserService implements IUserService {
     UserRepository userRepository;
 
     @Override
-    @Transactional
     public User create(final User user) {
-        LOGGER.debug("Creating {}", user);
+        LOGGER.info("Creating {}", user);
         return userRepository.save(user);
     }
 

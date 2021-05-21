@@ -38,7 +38,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         if (alreadySetup)
             return;
 
-        createRoleIfNotFound("ROLE_SUPERADMIN");
         createRoleIfNotFound("ROLE_ADMIN");
         createRoleIfNotFound("ROLE_SUPPORT");
         createRoleIfNotFound("ROLE_USER");
@@ -53,24 +52,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
     @Transactional
     void createUsersIfNotFound() {
-
-        // Root users
-        for (int i = 1; i <= 2; i++) {
-            String username = "root" + i + "@todo.com";
-            User user = userRepository.findByUsernameIgnoreCase(username);
-            if (user == null) {
-                Role userRole = roleRepository.findByName("ROLE_SUPERADMIN");
-                user = new User();
-                user.setFirstName("f root");
-                user.setLastName("l root");
-                user.setPassword(passwordEncoder.encode("password"));
-                user.setUsername(username);
-                user.setRoles(Arrays.asList(userRole));
-                user.setEnabled(true);
-                user.setVerifiedAt(new Date());
-                userRepository.save(user);
-            }
-        }
 
         // Admin users
         for (int i = 1; i <= 3; i++) {
@@ -157,7 +138,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         if (role == null) {
             role = new Role();
             role.setName(name);
-            // role.setPrivileges(privileges);
             roleRepository.save(role);
         }
         return role;
