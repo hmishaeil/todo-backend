@@ -15,9 +15,7 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
@@ -58,10 +56,10 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
         // Root users
         for (int i = 1; i <= 2; i++) {
-            String username = "root" + i + "@cashmino.com";
+            String username = "root" + i + "@todo.com";
             User user = userRepository.findByUsernameIgnoreCase(username);
             if (user == null) {
-                Role userRole = roleRepository.findByName("ROLE_ROOT");
+                Role userRole = roleRepository.findByName("ROLE_SUPERADMIN");
                 user = new User();
                 user.setFirstName("f root");
                 user.setLastName("l root");
@@ -76,7 +74,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
         // Admin users
         for (int i = 1; i <= 3; i++) {
-            String username = "admin" + i + "@cashmino.com";
+            String username = "admin" + i + "@todo.com";
             User user = userRepository.findByUsernameIgnoreCase(username);
             if (user == null) {
                 Role userRole = roleRepository.findByName("ROLE_ADMIN");
@@ -95,7 +93,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
         // Support users
         for (int i = 1; i <= 5; i++) {
-            String username = "support" + i + "@cashmino.com";
+            String username = "support" + i + "@todo.com";
             User user = userRepository.findByUsernameIgnoreCase(username);
             if (user == null) {
                 Role userRole = roleRepository.findByName("ROLE_SUPPORT");
@@ -114,7 +112,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
         // Regular users
         for (int i = 1; i <= 10; i++) {
-            String username = "user" + i + "@cashmino.com";
+            String username = "user" + i + "@todo.com";
             User user = userRepository.findByUsernameIgnoreCase(username);
             if (user == null) {
                 Role userRole = roleRepository.findByName("ROLE_USER");
@@ -135,7 +133,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     void createTodosIfNotFound() {
 
         for (int i = 1; i <= 10; i++) {
-            String username = "user" + i + "@cashmino.com";
+            String username = "user" + i + "@todo.com";
             User user = userRepository.findByUsernameIgnoreCase(username);
 
             if (todoRepository.getUserTodos(user.getId()).size() == 0) {

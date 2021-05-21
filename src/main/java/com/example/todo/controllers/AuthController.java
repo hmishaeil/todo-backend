@@ -125,10 +125,19 @@ public class AuthController {
         userService.update(user);
     }
 
-    @GetMapping("/validate-jwt")
+    @GetMapping("/validate-jwt/{token}/{username}")
     @ResponseBody
-    public boolean validateJwtToken(@PathVariable String token, @PathVariable String username){
-        return jwtTokenUtil.validateToken(token, username);
+    public Boolean validateJwtToken(@PathVariable String token, @PathVariable String username){
+
+        Boolean result;
+
+        try {
+            result = jwtTokenUtil.validateToken(token, username);
+        } catch (Exception e) {
+            result = false;
+        }
+
+        return result;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.todo.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
@@ -39,6 +40,7 @@ public class User extends Auditable<String> implements Serializable {
   private String firstName;
   private String lastName;
 
+  @JsonIgnore
   @Column(nullable = false)
   private String password;
 
