@@ -4,6 +4,7 @@ import com.example.todo.exceptions.AuthenticationException;
 import com.example.todo.jwt.JwtTokenUtil;
 import com.example.todo.requests.JwtTokenRequest;
 import com.example.todo.responses.JwtTokenResponse;
+import com.example.todo.responses.LoginResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +52,12 @@ public class JwtAuthenticationController {
 
     final String token = jwtTokenUtil.generateToken(userDetails);
 
-    return ResponseEntity.ok(new JwtTokenResponse(token));
+    LoginResponse response = new LoginResponse();
+    response.setUsername(userDetails.getUsername());
+    response.setToken(token);
+    response.setRole(userDetails.getAuthorities().iterator().next().getAuthority());
+
+    return ResponseEntity.ok(response);
   }
 
   @RequestMapping(value = "${jwt.refresh.token.uri}", method = RequestMethod.GET)
@@ -71,12 +77,13 @@ public class JwtAuthenticationController {
   }
 
   // @ExceptionHandler({ AuthenticationException.class })
-  // public ResponseEntity<String> handleAuthenticationException(AuthenticationException e) {
-  //   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+  // public ResponseEntity<String>
+  // handleAuthenticationException(AuthenticationException e) {
+  // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
   // }
 
   private void authenticate(String username, String password) {
-    
+
     Objects.requireNonNull(username);
     Objects.requireNonNull(password);
 
