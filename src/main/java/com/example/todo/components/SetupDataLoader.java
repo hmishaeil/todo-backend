@@ -73,7 +73,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         }
 
         // Support users
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 3; i++) {
             String username = "support" + i + "@todo.com";
             User user = userRepository.findByUsernameIgnoreCase(username);
             if (user == null) {
@@ -92,7 +92,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         }
 
         // Regular users
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 5; i++) {
             String username = "user" + i + "@todo.com";
             User user = userRepository.findByUsernameIgnoreCase(username);
             if (user == null) {
