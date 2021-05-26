@@ -19,13 +19,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -50,11 +53,22 @@ public class UserController {
     @GetMapping("/users")
     @ResponseBody
     @Secured({ "ROLE_ADMIN", "ROLE_SUPPORT" })
-    public List<User> getUsers(Authentication authentication) {
-
+    public List<User> getUsers(Authentication authentication, @RequestParam Optional<String> searchTerm) {
+        
         log.info("{}", authentication);
 
-        return userService.getUsers();
+        List<User> users = null;
+        users = userService.getUsers();
+
+        if(searchTerm.isPresent()){
+            users = Arrays.asList(users.stream().filter(
+                user -> 
+                user.getUsername().toLowerCase().contains(searchTerm.get()) || 
+                user.getRoles().iterator().next().getName().toLowerCase().contains(searchTerm.get())
+                ).toArray(User[]::new));
+        }
+
+        return users;
     }
 
     @Secured({ "ROLE_ADMIN", "ROLE_SUPPORT" })

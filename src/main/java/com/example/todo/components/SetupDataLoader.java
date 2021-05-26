@@ -113,7 +113,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     @Transactional
     void createTodosIfNotFound() {
 
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 5; i++) {
             String username = "user" + i + "@todo.com";
             User user = userRepository.findByUsernameIgnoreCase(username);
 

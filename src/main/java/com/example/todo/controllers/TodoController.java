@@ -16,11 +16,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -37,15 +41,26 @@ public class TodoController {
 
     @GetMapping("/todos")
     @ResponseBody
-    public List<Todo> getTodos(Authentication authentication) {
+    public List<Todo> getTodos(Authentication authentication, @RequestParam Optional<String> searchTerm) {
+
+        List<Todo> todos;
 
         if (authentication.getAuthorities().toString().contains("ADMIN")) {
-            return todoService.getTodos();
+            todos = todoService.getTodos();
+        } else {
+            User user = userService.getUserByUsername(authentication.getName());
+            todos = todoService.getTodosForUser(user.getId());
         }
 
-        User user = userService.getUserByUsername(authentication.getName());
-        return todoService.getTodosForUser(user.getId());
+        if (searchTerm.isPresent()) {
+            todos = Arrays
+                    .asList(todos.stream()
+                            .filter(todo -> todo.getName().toLowerCase().contains(searchTerm.get())
+                                    || todo.getDescription().toLowerCase().contains(searchTerm.get()))
+                            .toArray(Todo[]::new));
+        }
 
+        return todos;
     }
 
     @GetMapping("/todos/{id}")
