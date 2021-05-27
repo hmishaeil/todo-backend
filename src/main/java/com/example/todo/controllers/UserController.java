@@ -4,6 +4,7 @@ import com.example.todo.entities.Role;
 import com.example.todo.entities.User;
 import com.example.todo.exceptions.ResourceAlreadyExistsException;
 import com.example.todo.requests.AddUserRequest;
+import com.example.todo.requests.UpdateUserRequest;
 import com.example.todo.services.interfaces.IEmailService;
 import com.example.todo.services.interfaces.IRoleService;
 import com.example.todo.services.interfaces.IUserService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,7 +34,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     @Autowired
@@ -54,18 +56,17 @@ public class UserController {
     @ResponseBody
     @Secured({ "ROLE_ADMIN", "ROLE_SUPPORT" })
     public List<User> getUsers(Authentication authentication, @RequestParam Optional<String> searchTerm) {
-        
+
         log.info("{}", authentication);
 
         List<User> users = null;
         users = userService.getUsers();
 
-        if(searchTerm.isPresent()){
-            users = Arrays.asList(users.stream().filter(
-                user -> 
-                user.getUsername().toLowerCase().contains(searchTerm.get()) || 
-                user.getRoles().iterator().next().getName().toLowerCase().contains(searchTerm.get())
-                ).toArray(User[]::new));
+        if (searchTerm.isPresent()) {
+            users = Arrays.asList(users.stream()
+                    .filter(user -> user.getUsername().toLowerCase().contains(searchTerm.get())
+                            || user.getRoles().iterator().next().getName().toLowerCase().contains(searchTerm.get()))
+                    .toArray(User[]::new));
         }
 
         return users;
@@ -110,4 +111,14 @@ public class UserController {
         return userService.create(newUser);
 
     }
+
+    @Secured({ "ROLE_ADMIN" })
+    @PutMapping("/users")
+    @ResponseBody
+    public User updateUser(@RequestBody UpdateUserRequest req) {
+
+        User user = modelMapper.map(req, User.class);
+        return userService.update(user);
+    }
+
 }

@@ -1,0 +1,14 @@
+
+
+mvn jasypt:encrypt -Djasypt.encryptor.password=yourpass -Djasypt.plugin.path="file:src/main/resources/application.yml"
+mvn jasypt:decrypt -Djasypt.encryptor.password=yourpass
+mvn jasypt:reencrypt -Djasypt.plugin.old.password=youroldpass -Djasypt.encryptor.password=yournewpass
+mvn jasypt:encrypt -Djasypt.encryptor.password=yourpass
+
+-Dspring.profiles.active=dev
+-Djasypt.encryptor.password=yourpass
+
+
+http://todo-application-fe.s3-website-us-west-1.amazonaws.com
+
+scp -i pem jar ec2:

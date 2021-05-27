@@ -87,12 +87,12 @@ public class JwtAuthenticationController {
     Objects.requireNonNull(username);
     Objects.requireNonNull(password);
 
-    try {
+    // try {
       authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-    } catch (DisabledException e) {
-      throw new AuthenticationException("USER_DISABLED", e);
-    } catch (BadCredentialsException e) {
-      throw new AuthenticationException("INVALID_CREDENTIALS", e);
-    }
+    // } catch (DisabledException e) {
+    //   throw new AuthenticationException("USER_DISABLED", e);
+    // } catch (BadCredentialsException e) {
+    //   throw new AuthenticationException("INVALID_CREDENTIALS", e);
+    // }
   }
 }

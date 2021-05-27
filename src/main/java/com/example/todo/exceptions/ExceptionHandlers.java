@@ -3,6 +3,9 @@ package com.example.todo.exceptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,7 +21,7 @@ public class ExceptionHandlers {
     @Autowired
     ExceptionResponse response;
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({ MethodArgumentNotValidException.class })
     public ResponseEntity<ExceptionResponse> methodArgumentNotValidException(MethodArgumentNotValidException ex) {
 
         List<String> errors = ex.getBindingResult().getFieldErrors().stream().map(x -> x.getDefaultMessage())
@@ -51,7 +54,8 @@ public class ExceptionHandlers {
         return new ResponseEntity<ExceptionResponse>(response, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler( { EmailNotVerifiedException.class, SendingEmailException.class })
+    @ExceptionHandler({ EmailNotVerifiedException.class, SendingEmailException.class,
+            HttpMessageNotReadableException.class })
     public ResponseEntity<ExceptionResponse> emailNotVerifiedYet(RuntimeException ex) {
 
         response.setStatus(HttpStatus.BAD_REQUEST.name());
@@ -62,13 +66,15 @@ public class ExceptionHandlers {
     }
 
     // @ExceptionHandler(SendingEmailException.class)
-    // public ResponseEntity<ExceptionResponse> sendingEmailFailed(SendingEmailException ex) {
+    // public ResponseEntity<ExceptionResponse>
+    // sendingEmailFailed(SendingEmailException ex) {
 
-    //     response.setStatus(HttpStatus.BAD_REQUEST.name());
-    //     response.setErrors(Arrays.asList(ex.getMessage()));
-    //     response.setTimestamp(LocalDateTime.now());
+    // response.setStatus(HttpStatus.BAD_REQUEST.name());
+    // response.setErrors(Arrays.asList(ex.getMessage()));
+    // response.setTimestamp(LocalDateTime.now());
 
-    //     return new ResponseEntity<ExceptionResponse>(response, HttpStatus.BAD_REQUEST);
+    // return new ResponseEntity<ExceptionResponse>(response,
+    // HttpStatus.BAD_REQUEST);
     // }
 
     @ExceptionHandler({ AuthenticationException.class })
@@ -90,6 +96,28 @@ public class ExceptionHandlers {
         response.setTimestamp(LocalDateTime.now());
 
         return new ResponseEntity<ExceptionResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
+    }
+
+    @ExceptionHandler({ DisabledException.class })
+    public ResponseEntity<ExceptionResponse> handleDisabledException(DisabledException ex) {
+
+        response.setStatus(HttpStatus.BAD_REQUEST.name());
+        response.setErrors(Arrays.asList("User has been disabled."));
+        response.setTimestamp(LocalDateTime.now());
+
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.BAD_REQUEST);
+
+    }
+
+    @ExceptionHandler({ BadCredentialsException.class })
+    public ResponseEntity<ExceptionResponse> handleBadCredentialException(BadCredentialsException ex) {
+
+        response.setStatus(HttpStatus.BAD_REQUEST.name());
+        response.setErrors(Arrays.asList("Invalid credential is provided."));
+        response.setTimestamp(LocalDateTime.now());
+
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.BAD_REQUEST);
 
     }
 
