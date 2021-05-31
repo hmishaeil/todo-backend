@@ -1,6 +1,8 @@
 package com.example.todo.controllers;
 
+import com.example.todo.entities.User;
 import com.example.todo.exceptions.AuthenticationException;
+import com.example.todo.exceptions.EmailNotVerifiedException;
 import com.example.todo.jwt.JwtTokenUtil;
 import com.example.todo.requests.JwtTokenRequest;
 import com.example.todo.responses.JwtTokenResponse;
@@ -9,11 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,25 +36,26 @@ public class JwtAuthenticationController {
   @Autowired
   private JwtTokenUtil jwtTokenUtil;
 
-  @Autowired
-  private UserDetailsService jwtInMemoryUserDetailsService;
-
   // login
   @RequestMapping(value = "${jwt.get.token.uri}", method = RequestMethod.POST)
   public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtTokenRequest authenticationRequest)
       throws AuthenticationException {
 
-    authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+    Authentication authenticatedUser = authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
-    final UserDetails userDetails = jwtInMemoryUserDetailsService
-        .loadUserByUsername(authenticationRequest.getUsername());
+    final User user = (User)authenticatedUser.getPrincipal();
+    if(user.getVerifiedAt() == null){
+        throw new EmailNotVerifiedException(String.format("Email not verified yet. '%s'.", user.getUsername()));
+    }
 
-    final String token = jwtTokenUtil.generateToken(userDetails);
+
+    final String token = jwtTokenUtil.generateToken(user);
 
     LoginResponse response = new LoginResponse();
-    response.setUsername(userDetails.getUsername());
+    response.setUsername(user.getUsername());
     response.setToken(token);
-    response.setRole(userDetails.getAuthorities().iterator().next().getAuthority());
+    response.setRole(user.getRoles().iterator().next().getName());
+    response.setUserId(user.getId());
 
     return ResponseEntity.ok(response);
   }
@@ -64,10 +64,6 @@ public class JwtAuthenticationController {
   public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
     String authToken = request.getHeader(tokenHeader);
     final String token = authToken.substring(7);
-    // String username = jwtTokenUtil.getUsernameFromToken(token);
-    // JwtUserDetails user = (JwtUserDetails)
-    // jwtInMemoryUserDetailsService.loadUserByUsername(username);
-
     if (jwtTokenUtil.canTokenBeRefreshed(token)) {
       String refreshedToken = jwtTokenUtil.refreshToken(token);
       return ResponseEntity.ok(new JwtTokenResponse(refreshedToken));
@@ -76,23 +72,11 @@ public class JwtAuthenticationController {
     }
   }
 
-  // @ExceptionHandler({ AuthenticationException.class })
-  // public ResponseEntity<String>
-  // handleAuthenticationException(AuthenticationException e) {
-  // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-  // }
-
-  private void authenticate(String username, String password) {
+  private Authentication authenticate(String username, String password) {
 
     Objects.requireNonNull(username);
     Objects.requireNonNull(password);
 
-    // try {
-      authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-    // } catch (DisabledException e) {
-    //   throw new AuthenticationException("USER_DISABLED", e);
-    // } catch (BadCredentialsException e) {
-    //   throw new AuthenticationException("INVALID_CREDENTIALS", e);
-    // }
+    return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
   }
 }

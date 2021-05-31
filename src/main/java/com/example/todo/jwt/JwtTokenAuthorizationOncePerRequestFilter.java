@@ -18,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import io.jsonwebtoken.ExpiredJwtException;
 
 @Component
@@ -26,9 +25,12 @@ public class JwtTokenAuthorizationOncePerRequestFilter extends OncePerRequestFil
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private UserDetailsService jwtInMemoryUserDetailsService;
+    // @Autowired
+    // private UserDetailsService jwtInMemoryUserDetailsService;
     
+    @Autowired
+    private MyUserDetailsService myUserDetailsService;
+
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
     
@@ -59,8 +61,10 @@ public class JwtTokenAuthorizationOncePerRequestFilter extends OncePerRequestFil
         logger.debug("JWT_TOKEN_USERNAME_VALUE '{}'", username);
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = this.jwtInMemoryUserDetailsService.loadUserByUsername(username);
+            // UserDetails userDetails = this.jwtInMemoryUserDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = this.myUserDetailsService.loadUserByUsername(username);
 
+            
             // if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
             if (jwtTokenUtil.validateToken(jwtToken, username)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

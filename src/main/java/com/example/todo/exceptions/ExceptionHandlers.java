@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -65,18 +66,6 @@ public class ExceptionHandlers {
         return new ResponseEntity<ExceptionResponse>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // @ExceptionHandler(SendingEmailException.class)
-    // public ResponseEntity<ExceptionResponse>
-    // sendingEmailFailed(SendingEmailException ex) {
-
-    // response.setStatus(HttpStatus.BAD_REQUEST.name());
-    // response.setErrors(Arrays.asList(ex.getMessage()));
-    // response.setTimestamp(LocalDateTime.now());
-
-    // return new ResponseEntity<ExceptionResponse>(response,
-    // HttpStatus.BAD_REQUEST);
-    // }
-
     @ExceptionHandler({ AuthenticationException.class })
     public ResponseEntity<ExceptionResponse> handleAuthenticationException(AuthenticationException ex) {
 
@@ -118,6 +107,17 @@ public class ExceptionHandlers {
         response.setTimestamp(LocalDateTime.now());
 
         return new ResponseEntity<ExceptionResponse>(response, HttpStatus.BAD_REQUEST);
+
+    }
+
+    @ExceptionHandler({ AccessDeniedException.class })
+    public ResponseEntity<ExceptionResponse> handleAccessDeniedException(AccessDeniedException ex) {
+
+        response.setStatus(HttpStatus.FORBIDDEN.name());
+        response.setErrors(Arrays.asList("Access denied."));
+        response.setTimestamp(LocalDateTime.now());
+
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.FORBIDDEN);
 
     }
 

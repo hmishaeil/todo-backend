@@ -8,10 +8,10 @@ import com.example.todo.services.interfaces.IUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -39,18 +38,18 @@ public class TodoController {
     @Autowired
     ModelMapper modelMapper;
 
-    @GetMapping("/todos")
+    @GetMapping("/users/{userId}/todos")
     @ResponseBody
-    public List<Todo> getTodos(Authentication authentication, @RequestParam Optional<String> searchTerm) {
+    public List<Todo> getTodos(@PathVariable Long userId, @RequestParam Optional<String> searchTerm) {
 
-        List<Todo> todos;
+        List<Todo> todos = null;
 
-        if (authentication.getAuthorities().toString().contains("ADMIN")) {
-            todos = todoService.getTodos();
-        } else {
-            User user = userService.getUserByUsername(authentication.getName());
-            todos = todoService.getTodosForUser(user.getId());
-        }
+        // if (authentication.getAuthorities().toString().contains("ADMIN")) {
+        //     todos = todoService.getTodos();
+        // } else {
+            // User user = userService.getUserByUsername(authentication.getName());
+            todos = todoService.getTodosForUser(userId);
+        // }
 
         if (searchTerm.isPresent()) {
             todos = Arrays
@@ -63,15 +62,15 @@ public class TodoController {
         return todos;
     }
 
-    @GetMapping("/todos/{id}")
-    public ResponseEntity<Todo> getTodo(@PathVariable Long id) {
-        return ResponseEntity.ok(todoService.getTodo(id));
+    @GetMapping("/users/{userId}/todos/{todoId}")
+    public ResponseEntity<Todo> getTodo(@PathVariable Long todoId) {
+        return ResponseEntity.ok(todoService.getTodo(todoId));
     }
 
-    @PostMapping("/todos")
-    public Todo createTodo(@RequestBody TodoDto td, Principal p) {
+    @PostMapping("/users/{userId}/todos")
+    public Todo createTodo(@RequestBody TodoDto td, @PathVariable Long userId) {
 
-        User user = userService.getUserByUsername(p.getName());
+        User user = userService.getUserByUserId(userId);
 
         Todo todo = modelMapper.map(td, Todo.class);
         todo.setUser(user);
@@ -81,8 +80,8 @@ public class TodoController {
         return createdTodo;
     }
 
-    @PutMapping("/todos")
-    public Todo updateTodo(@RequestBody TodoDto td, Principal p) {
+    @PutMapping("/users/{userId}/todos/{todoId}")
+    public Todo updateTodo(@RequestBody TodoDto td) {
 
         Todo todo = todoService.getTodo(td.getId());
 
@@ -94,8 +93,8 @@ public class TodoController {
         return todoService.updateTodo(todo);
     }
 
-    @DeleteMapping("/todos/{id}")
-    public ResponseEntity<Void> deleteTodo(@PathVariable Long id) {
-        return todoService.deleteTodo(id);
+    @DeleteMapping("/users/{userId}/todos/{todoId}")
+    public ResponseEntity<Void> deleteTodo(@PathVariable Long todoId) {
+        return todoService.deleteTodo(todoId);
     }
 }

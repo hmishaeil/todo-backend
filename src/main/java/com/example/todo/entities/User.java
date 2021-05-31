@@ -2,7 +2,11 @@ package com.example.todo.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,15 +21,16 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Data
-public class User extends Auditable<Long> implements Serializable {
+@Getter
+@Setter
+public class User extends Auditable<Long> implements UserDetails {
 
   private static final long serialVersionUID = 4865903039190150223L;
 
@@ -47,11 +52,11 @@ public class User extends Auditable<Long> implements Serializable {
   @Column(nullable = false)
   private boolean isEnabled;
 
-  @Column(nullable = true)
   private Date verifiedAt;
-
-  @Column(nullable = true)
   private String internalNote;
+  private boolean accountNonExpired = true;
+  private boolean accountNonLocked = true;
+  private boolean credentialsNonExpired = true;
 
   @JsonManagedReference
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -60,5 +65,16 @@ public class User extends Auditable<Long> implements Serializable {
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
   private Collection<Role> roles;
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    List<GrantedAuthority> authorities = new ArrayList<>();
+    for (Role role : this.roles) {
+      authorities.add(new SimpleGrantedAuthority(role.getName()));
+      // role.getPrivileges().stream().map(p -> new
+      // SimpleGrantedAuthority(p.getName())).forEach(authorities::add);
+    }
+    return authorities;
+  }
 
 }

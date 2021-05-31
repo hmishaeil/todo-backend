@@ -7,6 +7,7 @@ import com.example.todo.requests.AddUserRequest;
 import com.example.todo.requests.UpdateUserRequest;
 import com.example.todo.services.interfaces.IEmailService;
 import com.example.todo.services.interfaces.IRoleService;
+import com.example.todo.services.interfaces.IToDoService;
 import com.example.todo.services.interfaces.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -44,6 +45,9 @@ public class UserController {
     IRoleService roleService;
 
     @Autowired
+    IToDoService todoService;
+
+    @Autowired
     IEmailService emailService;
 
     @Autowired
@@ -78,6 +82,14 @@ public class UserController {
     public User getUser(@PathVariable Long id) {
         return userService.getUserByUserId(id);
     }
+
+    // @Secured({ "ROLE_ADMIN", "ROLE_SUPPORT" })
+    // @GetMapping("/users/{id}/todos")
+    // @ResponseBody
+    // public List<Todo> getUserTodos(@PathVariable Long id) {
+    //     return todoService.getTodosForUser(id);
+    // }
+
 
     @Secured({ "ROLE_ADMIN" })
     @PostMapping("/users")
