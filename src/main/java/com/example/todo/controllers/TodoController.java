@@ -8,10 +8,10 @@ import com.example.todo.services.interfaces.IUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -38,18 +37,14 @@ public class TodoController {
     @Autowired
     ModelMapper modelMapper;
 
+    @PreAuthorize("#userId == authentication.principal.id or hasRole('ROLE_ADMIN')")
     @GetMapping("/users/{userId}/todos")
     @ResponseBody
     public List<Todo> getTodos(@PathVariable Long userId, @RequestParam Optional<String> searchTerm) {
 
         List<Todo> todos = null;
 
-        // if (authentication.getAuthorities().toString().contains("ADMIN")) {
-        //     todos = todoService.getTodos();
-        // } else {
-            // User user = userService.getUserByUsername(authentication.getName());
-            todos = todoService.getTodosForUser(userId);
-        // }
+        todos = todoService.getTodosForUser(userId);
 
         if (searchTerm.isPresent()) {
             todos = Arrays
@@ -63,7 +58,7 @@ public class TodoController {
     }
 
     @GetMapping("/users/{userId}/todos/{todoId}")
-    public ResponseEntity<Todo> getTodo(@PathVariable Long todoId) {
+    public ResponseEntity<Todo> getTodo(@PathVariable Long userId, @PathVariable Long todoId) {
         return ResponseEntity.ok(todoService.getTodo(todoId));
     }
 

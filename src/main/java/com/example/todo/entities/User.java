@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import java.util.ArrayList;
@@ -30,12 +31,13 @@ import java.util.List;
 @Table(name = "users")
 @Getter
 @Setter
+@SequenceGenerator(name = "user_seq", initialValue = 1)
 public class User extends Auditable<Long> implements UserDetails {
 
   private static final long serialVersionUID = 4865903039190150223L;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
   @Column(nullable = false, updatable = false)
   private long id;
 

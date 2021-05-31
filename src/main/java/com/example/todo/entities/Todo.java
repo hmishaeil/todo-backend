@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import java.util.Date;
@@ -18,10 +19,11 @@ import java.util.Date;
 @Entity
 @Table(name = "todos")
 @Data
+@SequenceGenerator(name = "todo_seq", initialValue = 1)
 public class Todo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "todo_seq")
     private Long id;
 
     @Column(nullable = false)
