@@ -1,11 +1,14 @@
 package com.example.todo.requests;
 
-import javax.validation.constraints.NotEmpty;
+import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
+@Data
 public class LoginRequest {
-    @NotEmpty(message = "username is a required field")
-    public String username;
+    @NotNull(message = "username is a required field")
+    private String username;
 
-    @NotEmpty(message = "password is a required field")
-    public String password;
+    @NotNull(message = "password is a required field")
+    private String password;
 }

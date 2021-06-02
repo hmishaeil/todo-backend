@@ -55,8 +55,12 @@ public class ExceptionHandlers {
         return new ResponseEntity<ExceptionResponse>(response, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({ EmailNotVerifiedException.class, SendingEmailException.class,
-            HttpMessageNotReadableException.class })
+    @ExceptionHandler({ 
+        EmailNotVerifiedException.class, 
+        SendingEmailException.class,
+        HttpMessageNotReadableException.class,
+        LoginAttemptsExceededException.class
+     })
     public ResponseEntity<ExceptionResponse> emailNotVerifiedYet(RuntimeException ex) {
 
         response.setStatus(HttpStatus.BAD_REQUEST.name());
@@ -101,6 +105,7 @@ public class ExceptionHandlers {
 
     @ExceptionHandler({ BadCredentialsException.class })
     public ResponseEntity<ExceptionResponse> handleBadCredentialException(BadCredentialsException ex) {
+
 
         response.setStatus(HttpStatus.BAD_REQUEST.name());
         response.setErrors(Arrays.asList("Invalid credential is provided."));
