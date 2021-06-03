@@ -11,4 +11,4 @@ mvn jasypt:encrypt -Djasypt.encryptor.password=yourpass
 
 http://todo-application-fe.s3-website-us-west-1.amazonaws.com
 
-scp -i pem jar ec2:
+scp -i pem jar ec2-user@ec2:~/.
