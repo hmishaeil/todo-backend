@@ -20,7 +20,7 @@ import java.util.Date;
 @Table(name = "todos")
 @Data
 @SequenceGenerator(name = "todo_seq", initialValue = 1)
-public class Todo {
+public class Todo extends Auditable<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "todo_seq")
@@ -35,6 +35,7 @@ public class Todo {
     private Boolean done;
 
     private Date targetDate;
+    private Boolean byAdmin;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

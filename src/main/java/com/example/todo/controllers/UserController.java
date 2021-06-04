@@ -83,14 +83,6 @@ public class UserController {
         return userService.getUserByUserId(id);
     }
 
-    // @Secured({ "ROLE_ADMIN", "ROLE_SUPPORT" })
-    // @GetMapping("/users/{id}/todos")
-    // @ResponseBody
-    // public List<Todo> getUserTodos(@PathVariable Long id) {
-    //     return todoService.getTodosForUser(id);
-    // }
-
-
     @Secured({ "ROLE_ADMIN" })
     @PostMapping("/users")
     @ResponseBody

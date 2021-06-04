@@ -11,7 +11,6 @@ import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 
 import java.util.Date;
-
 @Data
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)

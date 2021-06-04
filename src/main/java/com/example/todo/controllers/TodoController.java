@@ -9,6 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +28,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "*")
+@PreAuthorize("#userId == authentication.principal.id or hasRole('ROLE_ADMIN')")
 public class TodoController {
 
     @Autowired
@@ -37,7 +40,6 @@ public class TodoController {
     @Autowired
     ModelMapper modelMapper;
 
-    @PreAuthorize("#userId == authentication.principal.id or hasRole('ROLE_ADMIN')")
     @GetMapping("/users/{userId}/todos")
     @ResponseBody
     public List<Todo> getTodos(@PathVariable Long userId, @RequestParam Optional<String> searchTerm) {
@@ -66,9 +68,12 @@ public class TodoController {
     public Todo createTodo(@RequestBody TodoDto td, @PathVariable Long userId) {
 
         User user = userService.getUserByUserId(userId);
-
+        Long loggedInUserId = ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        
         Todo todo = modelMapper.map(td, Todo.class);
         todo.setUser(user);
+        todo.setCreatedBy(loggedInUserId);
+        todo.setByAdmin(user.getId() != loggedInUserId);
 
         Todo createdTodo = todoService.createTodo(todo);
 

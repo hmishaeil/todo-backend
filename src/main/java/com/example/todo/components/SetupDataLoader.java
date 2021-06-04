@@ -124,6 +124,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
                     todo.setDescription("Todo " + j + " sample description");
                     todo.setDone(j % 2 == 0);
                     todo.setTargetDate(new Date());
+                    todo.setCreatedBy(user.getId());
                     todo.setUser(user);
                     todoRepository.save(todo);
                 }
