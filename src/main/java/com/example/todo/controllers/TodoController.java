@@ -9,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -81,7 +80,7 @@ public class TodoController {
     }
 
     @PutMapping("/users/{userId}/todos/{todoId}")
-    public Todo updateTodo(@RequestBody TodoDto td) {
+    public Todo updateTodo(@RequestBody TodoDto td, @PathVariable Long userId) {
 
         Todo todo = todoService.getTodo(td.getId());
 
@@ -94,7 +93,7 @@ public class TodoController {
     }
 
     @DeleteMapping("/users/{userId}/todos/{todoId}")
-    public ResponseEntity<Void> deleteTodo(@PathVariable Long todoId) {
+    public ResponseEntity<Void> deleteTodo(@PathVariable Long todoId, @PathVariable Long userId) {
         return todoService.deleteTodo(todoId);
     }
 }
